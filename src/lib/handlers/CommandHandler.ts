@@ -53,6 +53,7 @@ export class CommandHandler {
 	 * @throws InterActionHandlerError
 	 */
 	public async reloadCommands(): Promise<void> {
+		this.commands.forEach((cmd) => cmd.unload());
 		this.commands = new Collection<string, Command>();
 		await this.loadCommands();
 
