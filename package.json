@@ -33,5 +33,9 @@
 		"start": "NODE_ENV=production node .",
 		"lint": "eslint src"
 	},
-	"packageManager": "yarn@3.2.3"
+	"packageManager": "yarn@3.2.3",
+	"dependencies": {
+		"@sapphire/timestamp": "^1.0.0",
+		"colorette": "^2.0.19"
+	}
 }

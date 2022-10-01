@@ -390,6 +390,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sapphire/timestamp@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@sapphire/timestamp@npm:1.0.0"
+  checksum: 2852210825626431cb7aee4da9cd04518778854f5b9e8eafc0fa0a57d499251030ad115f0d0c58e15e5b176cfb495301df7418d95e51c4826e9fadc09ff98bbb
+  languageName: node
+  linkType: hard
+
 "@sapphire/ts-config@npm:^3.3.4":
   version: 3.3.4
   resolution: "@sapphire/ts-config@npm:3.3.4"
@@ -1044,7 +1051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:^2.0.16, colorette@npm:^2.0.17":
+"colorette@npm:^2.0.16, colorette@npm:^2.0.17, colorette@npm:^2.0.19":
   version: 2.0.19
   resolution: "colorette@npm:2.0.19"
   checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
@@ -2899,10 +2906,12 @@ __metadata:
     "@commitlint/config-angular": ^17.1.0
     "@sapphire/eslint-config": ^4.3.8
     "@sapphire/prettier-config": ^1.4.4
+    "@sapphire/timestamp": ^1.0.0
     "@sapphire/ts-config": ^3.3.4
     "@types/node": ^18.7.23
     "@typescript-eslint/eslint-plugin": ^5.38.1
     "@typescript-eslint/parser": ^5.38.1
+    colorette: ^2.0.19
     eslint: ^8.24.0
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.2.1
