@@ -4,20 +4,23 @@ export class Command implements CommandOptions {
 	public name: string;
 	public description: string;
 
+	/** The category of the command (automatically set by the commandHandler) */
+	public category!: string;
 	/** @internal The name of the file associated with the command */
-	public filename: string;
+	public filename!: string;
 
 	public constructor(public client: PentagonClient, options: CommandOptions) {
 		this.name = options.name;
 		this.description = options.description;
-		this.filename = __filename;
 	}
 
 	/**
 	 * Runs when the command is loaded
+	 * @requires super callback on overwrite
 	 */
-	public load() {
-		// placeholder for possible load function for command
+	public load(options: CommandLoadOptions) {
+		this.category = options.category;
+		this.filename = options.filename;
 	}
 
 	/**
@@ -33,4 +36,9 @@ interface CommandOptions {
 	name: string;
 	/** A small description about the command */
 	description: string;
+}
+
+interface CommandLoadOptions {
+	filename: string;
+	category: string;
 }

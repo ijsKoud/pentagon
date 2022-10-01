@@ -8,8 +8,6 @@ import { Command } from "../structures/Command.js";
 
 /*
 TODO:
-- Category directories for commands
-- filename -> filepath property for command
 - Log results in console with logger via debug
 */
 
@@ -27,17 +25,24 @@ export class CommandHandler {
 	public async loadCommands(): Promise<number> {
 		if (!existsSync(this.directory)) throw new InteractionHandlerError("InvalidDirectory", `"${this.directory}" does not exist`);
 
-		const files = await readdir(this.directory);
-		for (const file of files) {
-			const { default: command } = await import(join(this.directory, file));
-			const cmd = new command(this.client);
+		const data = await readdir(this.directory);
+		const categories = data.filter((str) => !str.endsWith(".ts") || !str.endsWith(".js"));
 
-			if (!(cmd instanceof Command))
-				throw new InteractionHandlerError("InvalidStructureClass", `"${file}" does not contain a Command extended default export`);
+		for (const category of categories) {
+			const files = await readdir(join(this.directory, category));
+			const validFiles = files.filter((str) => str.startsWith(".ts") || str.startsWith(".js"));
 
-			cmd.filename = file;
-			cmd.load();
-			this.commands.set(cmd.name, cmd);
+			for (const file of validFiles) {
+				const { default: command } = await import(join(this.directory, category, file));
+				const cmd = new command(this.client);
+
+				if (!(cmd instanceof Command))
+					// TODO: change this to a error log
+					throw new InteractionHandlerError("InvalidStructureClass", `"${file}" does not contain a Command extended default export`);
+
+				cmd.load({ category, filename: file });
+				this.commands.set(cmd.name, cmd);
+			}
 		}
 
 		return this.commands.size;
@@ -75,19 +80,20 @@ export class CommandHandler {
 
 	/**
 	 * Loads a command if not yet present in the cache
+	 * @param category The category in which the file is located
 	 * @param file The file name of the command
 	 * @returns Boolean depending on command presence in cache (true = already present)
 	 * @throws InterActionHandlerError
 	 */
-	public async loadCommand(file: string): Promise<boolean> {
-		const { default: command } = await import(join(this.directory, file));
+	public async loadCommand(category: string, file: string): Promise<boolean> {
+		const { default: command } = await import(join(this.directory, category, file));
 		const cmd = new command(this.client);
 
 		if (!(cmd instanceof Command))
 			throw new InteractionHandlerError("InvalidStructureClass", `"${file}" does not contain a Command extended default export`);
 		if (this.commands.has(cmd.name)) return false;
 
-		cmd.load();
+		cmd.load({ category, filename: file });
 		this.commands.set(cmd.name, cmd);
 
 		return true;
@@ -105,7 +111,7 @@ export class CommandHandler {
 		const command = this.commands.get(name);
 		if (command) {
 			command.unload();
-			const bool = await this.loadCommand(command.filename);
+			const bool = await this.loadCommand(command.category, command.filename);
 
 			return bool;
 		}
