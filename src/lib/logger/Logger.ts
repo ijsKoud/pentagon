@@ -34,7 +34,7 @@ export class Logger {
 	public level: LogLevel;
 
 	public constructor(options: LoggerOptions = {}) {
-		this.console = new Console(options.stdout ?? process.stdout, options.stderr ?? process.stderr);
+		this.console = options.console ?? new Console(options.stdout ?? process.stdout, options.stderr ?? process.stderr);
 		this.formats = Logger.createFormatMap(options.format, options.defaultFormat);
 		this.join = options.join ?? " ";
 		this.depth = options.depth ?? 0;
@@ -141,14 +141,20 @@ export class Logger {
 	]);
 
 	private static createFormatMap(options: LoggerFormatOptions = {}, defaults: LoggerLevelOptions = options.none ?? {}) {
+		const clear = (str: string | number) => str.toString();
+		const getColor = (lvlOptions?: LoggerLevelOptions): ColorFunction | false => {
+			if (!options.none?.level || (lvlOptions && !lvlOptions.level)) return clear;
+
+			return false;
+		};
 		return new Map<LogLevel, LoggerLevel>([
-			[LogLevel.Trace, Logger.ensureDefaultLevel(options.trace, defaults, dim, "TRACE")],
-			[LogLevel.Debug, Logger.ensureDefaultLevel(options.debug, defaults, magenta, "DEBUG")],
-			[LogLevel.Info, Logger.ensureDefaultLevel(options.info, defaults, blue, "INFO")],
-			[LogLevel.Warn, Logger.ensureDefaultLevel(options.warn, defaults, yellow, "WARN")],
-			[LogLevel.Error, Logger.ensureDefaultLevel(options.error, defaults, red, "ERROR")],
-			[LogLevel.Fatal, Logger.ensureDefaultLevel(options.fatal, defaults, bgRed, "FATAL")],
-			[LogLevel.None, Logger.ensureDefaultLevel(options.none, defaults, white, "")]
+			[LogLevel.Trace, Logger.ensureDefaultLevel(options.trace, defaults, getColor() || dim, "TRACE")],
+			[LogLevel.Debug, Logger.ensureDefaultLevel(options.debug, defaults, getColor() || magenta, "DEBUG")],
+			[LogLevel.Info, Logger.ensureDefaultLevel(options.info, defaults, getColor() || blue, "INFO")],
+			[LogLevel.Warn, Logger.ensureDefaultLevel(options.warn, defaults, getColor() || yellow, "WARN")],
+			[LogLevel.Error, Logger.ensureDefaultLevel(options.error, defaults, getColor() || red, "ERROR")],
+			[LogLevel.Fatal, Logger.ensureDefaultLevel(options.fatal, defaults, getColor() || bgRed, "FATAL")],
+			[LogLevel.None, Logger.ensureDefaultLevel(options.none, defaults, getColor() || white, "")]
 		]);
 	}
 
@@ -161,3 +167,5 @@ export class Logger {
 		});
 	}
 }
+
+type ColorFunction = (str: string | number) => string;

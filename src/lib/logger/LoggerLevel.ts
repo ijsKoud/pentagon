@@ -31,9 +31,7 @@ export class LoggerLevel {
 		const prefix = (this.timestamp?.run() ?? "") + this.infix;
 
 		if (prefix.length) {
-			const formatter = this.message //
-				? (line: string) => prefix + this.message!.run(line)
-				: (line: string) => prefix + line;
+			const formatter = this.message ? (line: string) => prefix + this.message!.run(line) : (line: string) => prefix + line;
 			return content.split("\n").map(formatter).join("\n");
 		}
 

@@ -42,6 +42,11 @@ export const enum LogLevel {
  */
 export interface LoggerOptions {
 	/**
+	 * The Console for the logs.
+	 * @default Console
+	 */
+	console?: Console;
+	/**
 	 * The WriteStream for the output logs.
 	 * @default process.stdout
 	 */
@@ -146,6 +151,12 @@ export interface LoggerLevelOptions {
 	 * @default colorette.clear
 	 */
 	message?: LoggerStyleResolvable | null;
+
+	/**
+	 * The style options for the level.
+	 * @default true
+	 */
+	level?: boolean;
 }
 
 /**
