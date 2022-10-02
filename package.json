@@ -38,7 +38,8 @@
 		"build:watch": "tsc --watch",
 		"dev": "NODE_ENV=development nodemon dist/index.js",
 		"start": "NODE_ENV=production node .",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"test": "vitest run"
 	},
 	"packageManager": "yarn@3.2.3"
 }
