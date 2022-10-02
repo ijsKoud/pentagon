@@ -93,7 +93,7 @@ export class CommandHandler {
 		cmd.load({ category, filename: file });
 		this.commands.set(cmd.name, cmd);
 
-		this.client.logger.debug(`(COMMANDHANDLER): Successfully loaded ${command.name}`);
+		this.client.logger.debug(`(COMMANDHANDLER): Successfully loaded ${cmd.name}`);
 
 		return true;
 	}
