@@ -143,7 +143,7 @@ export class Logger {
 	private static createFormatMap(options: LoggerFormatOptions = {}, defaults: LoggerLevelOptions = options.none ?? {}) {
 		const clear = (str: string | number) => str.toString();
 		const getColor = (lvlOptions?: LoggerLevelOptions): ColorFunction | false => {
-			if (!options.none?.level || (lvlOptions && !lvlOptions.level)) return clear;
+			if ((options.none && !options.none?.level) || (lvlOptions && !lvlOptions.level)) return clear;
 
 			return false;
 		};
