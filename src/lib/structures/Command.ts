@@ -31,14 +31,14 @@ export class Command implements CommandOptions {
 	}
 }
 
-interface CommandOptions {
+export interface CommandOptions {
 	/** The name of the command */
 	name: string;
 	/** A small description about the command */
 	description: string;
 }
 
-interface CommandLoadOptions {
+export interface CommandLoadOptions {
 	filename: string;
 	category: string;
 }

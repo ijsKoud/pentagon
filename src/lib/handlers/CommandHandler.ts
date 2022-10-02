@@ -6,11 +6,6 @@ import { join } from "node:path";
 import { Collection } from "discord.js";
 import { Command } from "../structures/Command.js";
 
-/*
-TODO:
-- Log results in console with logger via debug
-*/
-
 export class CommandHandler {
 	/** All the available commands */
 	public commands = new Collection<string, Command>();
@@ -26,19 +21,18 @@ export class CommandHandler {
 		if (!existsSync(this.directory)) throw new InteractionHandlerError("InvalidDirectory", `"${this.directory}" does not exist`);
 
 		const data = await readdir(this.directory);
-		const categories = data.filter((str) => !str.endsWith(".ts") || !str.endsWith(".js"));
+		const categories = data.filter((str) => !/\.[0-9a-z]+$/i.test(str));
 
 		for (const category of categories) {
 			const files = await readdir(join(this.directory, category));
-			const validFiles = files.filter((str) => str.startsWith(".ts") || str.startsWith(".js"));
+			const validFiles = files.filter((str) => str.endsWith(".js"));
 
 			for (const file of validFiles) {
 				const { default: command } = await import(join(this.directory, category, file));
 				const cmd = new command(this.client);
 
 				if (!(cmd instanceof Command))
-					// TODO: change this to a error log
-					throw new InteractionHandlerError("InvalidStructureClass", `"${file}" does not contain a Command extended default export`);
+					this.client.logger.warn(`(COMMANDHANDLER): "${file}" does not contain a Command extended default export.`);
 
 				cmd.load({ category, filename: file });
 				this.commands.set(cmd.name, cmd);
@@ -53,11 +47,13 @@ export class CommandHandler {
 	 * @throws InterActionHandlerError
 	 */
 	public async reloadCommands(): Promise<void> {
+		this.client.logger.debug("(COMMANDHANDLER): Reloading all commands...");
+
 		this.commands.forEach((cmd) => cmd.unload());
 		this.commands = new Collection<string, Command>();
 		await this.loadCommands();
 
-		// TODO: Log results via debug
+		this.client.logger.debug("(COMMANDHANDLER): Successfully reloaded all commands.");
 	}
 
 	/**
@@ -71,12 +67,12 @@ export class CommandHandler {
 			command.unload();
 			this.commands.delete(name);
 
+			this.client.logger.debug(`(COMMANDHANDLER): Successfully unloaded ${command.name}`);
+
 			return true;
 		}
 
 		return false;
-
-		// TODO: Log results via debug
 	}
 
 	/**
@@ -97,9 +93,9 @@ export class CommandHandler {
 		cmd.load({ category, filename: file });
 		this.commands.set(cmd.name, cmd);
 
-		return true;
+		this.client.logger.debug(`(COMMANDHANDLER): Successfully loaded ${command.name}`);
 
-		// TODO: Log results via debug
+		return true;
 	}
 
 	/**
@@ -114,11 +110,11 @@ export class CommandHandler {
 			command.unload();
 			const bool = await this.loadCommand(command.category, command.filename);
 
+			this.client.logger.debug(`(COMMANDHANDLER): Successfully reloaded ${command.name}`);
+
 			return bool;
 		}
 
 		return false;
-
-		// TODO: Log results via debug
 	}
 }
