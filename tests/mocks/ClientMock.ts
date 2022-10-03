@@ -19,7 +19,6 @@ export class PentagonClient extends Client {
 	/**
 	 * Starts the bot and all its sub programs
 	 */
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public async run() {
 		const commands = await this.commandHandler.loadCommands();
 		const events = await this.eventHandler.loadEvents();
