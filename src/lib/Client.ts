@@ -32,8 +32,10 @@ export class PentagonClient extends Client {
 		const commands = await this.commandHandler.loadCommands();
 		const events = await this.eventHandler.loadEvents();
 
-		this.logger.info(`(COMMANDHANDLER): Loaded a total of ${commands} Commands.`);
-		this.logger.info(`(EVENTHANDLER): Loaded a total of ${events} EventListeners.`);
+		this.logger.info(`(CommandHandler): Loaded a total of ${commands} Commands.`);
+		this.logger.info(`(EventHandler): Loaded a total of ${events} EventListeners.`);
+
+		await this.login(this.getToken());
 	}
 
 	/**
@@ -42,5 +44,13 @@ export class PentagonClient extends Client {
 	 */
 	private getLevel() {
 		return process.env.NODE_ENV === "development" ? LogLevel.Debug : LogLevel.Info;
+	}
+
+	/**
+	 * Gets the token of the Discord bot
+	 * @returns A Discord bot token
+	 */
+	private getToken(): string {
+		return process.env.DISCORD_TOKEN ?? "";
 	}
 }
