@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CommandHandler } from "./handlers/CommandHandler.js";
+import { ErrorHandler } from "./handlers/ErrorHandler.js";
 import { EventHandler } from "./handlers/EventHandler.js";
 import { Logger } from "./logger/Logger.js";
 import { LogLevel } from "./logger/LoggerTypes.js";
@@ -11,6 +12,8 @@ const basePath = join(fileURLToPath(import.meta.url), "../../bot");
 export class PentagonClient extends Client {
 	public commandHandler = new CommandHandler(this, join(basePath, "commands"));
 	public eventHandler = new EventHandler(this, join(basePath, "events"));
+	public errorHandler = new ErrorHandler(this);
+
 	public logger = new Logger({ level: this.getLevel() });
 
 	public constructor() {
