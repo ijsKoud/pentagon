@@ -1,6 +1,8 @@
 import type { PentagonClient } from "../Client.js";
+import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
+import { Base } from "./Base.js";
 
-export class Command implements CommandOptions {
+export class Command extends Base implements CommandOptions {
 	public name: string;
 	public description: string;
 
@@ -9,7 +11,10 @@ export class Command implements CommandOptions {
 	/** @internal The name of the file associated with the command */
 	public filename!: string;
 
-	public constructor(public client: PentagonClient, options: CommandOptions) {
+	public constructor(client: PentagonClient, options: CommandOptions) {
+		super(client);
+		if (!options) throw new InteractionHandlerError("noConstructorOptions");
+
 		this.name = options.name;
 		this.description = options.description;
 	}
