@@ -22,13 +22,12 @@ export class EventHandler {
 
 		const data = await readdir(this.directory);
 		const categories = data.filter((str) => !/\.[0-9a-z]+$/i.test(str));
-		categories.push("");
 
-		for await (const category of categories) {
+		for (const category of categories) {
 			const files = await readdir(join(this.directory, category));
 			const validFiles = files.filter((str) => str.endsWith(".js"));
 
-			for await (const file of validFiles) {
+			for (const file of validFiles) {
 				const { default: event } = await import(join(this.directory, category, file));
 				const evnt = new event(this.client);
 
@@ -47,7 +46,7 @@ export class EventHandler {
 	 * Reloads all present events
 	 * @throws InterActionHandlerError
 	 */
-	public async reloadEvents(): Promise<void> {
+	public async reloadevents(): Promise<void> {
 		this.client.logger.debug("(EVENTHANDLER): Reloading all events...");
 
 		this.events.forEach((event) => event.unload());
