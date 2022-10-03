@@ -21,7 +21,7 @@ export class EventListener extends Base implements EventListenerOptions {
 		this.once = options.once;
 	}
 
-	public run<K extends keyof ClientEvents>(...args: ClientEvents[K] | any): Awaitable<void> {
+	public run<K extends keyof ClientEvents>(...args: ClientEvents[K] | readonly any[]): Awaitable<void> {
 		void 0; // placeholder
 	}
 
@@ -31,7 +31,7 @@ export class EventListener extends Base implements EventListenerOptions {
 	 */
 	public load(options: EventListenerLoadOptions) {
 		this.filepath = options.filepath;
-		this.emitter[this.once ? "once" : "on"](this.name, this.run.bind(this));
+		this.emitter[this.once ? "once" : "on"](this.name, this._run.bind(this));
 	}
 
 	/**
@@ -40,6 +40,14 @@ export class EventListener extends Base implements EventListenerOptions {
 	 */
 	public unload() {
 		this.emitter.off(this.name, this.run.bind(this));
+	}
+
+	private async _run(...args: readonly any[]): Promise<void> {
+		try {
+			await this.run(...args);
+		} catch (error) {
+			void this.client.errorHandler.handleError(error);
+		}
 	}
 }
 
