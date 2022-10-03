@@ -1,14 +1,11 @@
-import type { PentagonClient } from "../../../lib/Client.js";
-import { Command, CommandLoadOptions } from "../../../lib/structures/Command.js";
+import { ApplyOptions } from "../../../lib/decorators/StructureDecorators.js";
+import { Command, CommandLoadOptions, CommandOptions } from "../../../lib/structures/Command.js";
 
+@ApplyOptions<CommandOptions>({
+	name: "test",
+	description: "test 3"
+})
 export default class extends Command {
-	public constructor(client: PentagonClient) {
-		super(client, {
-			name: "ping",
-			description: "Ping... Pong!"
-		});
-	}
-
 	public load(options: CommandLoadOptions) {
 		super.load(options);
 	}

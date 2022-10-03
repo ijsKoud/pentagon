@@ -11,12 +11,10 @@ import { ApplyOptionsParam, createClassDecorator, createProxy, ConstructorType }
 export function ApplyOptions<Options extends CommandOptions | EventListenerOptions>(result: ApplyOptionsParam<Options>): ClassDecorator {
 	const getOptions = (client: PentagonClient) => (typeof result === "function" ? result(client) : result);
 
-	const classDecorator = createClassDecorator((target: ConstructorType<ConstructorParameters<typeof Base>, Options>) => {
+	return createClassDecorator((target: ConstructorType<ConstructorParameters<typeof Base>, Base>) =>
 		createProxy(target, {
 			construct: (constructor, [client, baseOptions = {}]: [PentagonClient, Partial<Options>]) =>
 				new constructor(client, { ...baseOptions, ...getOptions(client) })
-		});
-	});
-
-	return classDecorator;
+		})
+	);
 }
