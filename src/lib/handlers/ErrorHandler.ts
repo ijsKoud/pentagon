@@ -13,17 +13,16 @@ export class ErrorHandler {
 	 * @param error The error that was emitted
 	 * @param interaction The interaction from the user that used the bot
 	 */
-	public async handleError(error: Error, interaction?: Interaction<"cached">): Promise<void> {
+	public async handleError(error: Error, interaction?: Interaction): Promise<void> {
 		if (error instanceof InteractionHandlerError) {
 			let fatal = false;
 			if (["InvalidDirectory", "noConstructorOptions"].includes(error.type)) fatal = true;
 
 			const message = `${bold(underline(`InteractionHandlerError(${error.type})`))}: ${error.message}`;
 			this.client.logger[fatal ? "fatal" : "error"](message);
-		}
-
-		if (error instanceof DiscordAPIError && interaction && !this.isSilencedError(interaction.channelId ?? "", interaction.guildId, error))
+		} else if (error instanceof DiscordAPIError && interaction && !this.isSilencedError(interaction.channelId ?? "", interaction.guildId, error))
 			this.client.logger.error(`${bold(underline(`DiscordAPIError(${error.name})`))}: ${error.message}`);
+		else this.client.logger.error(`${bold(underline(`Error(${error.name})`))}: ${error.message}`);
 
 		if (interaction && interaction.isRepliable())
 			await interaction

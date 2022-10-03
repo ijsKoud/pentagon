@@ -1,4 +1,4 @@
-import type { Awaitable, CommandInteraction } from "discord.js";
+import type { Awaitable, CommandInteraction, Interaction } from "discord.js";
 import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import { Base } from "./Base.js";
@@ -44,7 +44,7 @@ export class Command extends Base implements CommandOptions {
 		try {
 			await this.run(interaction);
 		} catch (error) {
-			void this.client.errorHandler.handleError(error, interaction);
+			void this.client.errorHandler.handleError(error, interaction as Interaction);
 		}
 	}
 }
