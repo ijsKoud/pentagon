@@ -8,4 +8,4 @@ export class InteractionHandlerError extends Error {
 	}
 }
 
-type InteractionHandlerErrorType = "InvalidDirectory" | "InvalidStructureClass";
+type InteractionHandlerErrorType = "InvalidDirectory" | "InvalidStructureClass" | "noConstructorOptions";

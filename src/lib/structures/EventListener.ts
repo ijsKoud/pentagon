@@ -1,8 +1,10 @@
 import type { Awaitable, ClientEvents } from "discord.js";
 import type EventEmitter from "events";
 import type { PentagonClient } from "../Client.js";
+import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
+import { Base } from "./Base.js";
 
-export class EventListener implements EventListenerOptions {
+export class EventListener extends Base implements EventListenerOptions {
 	public name: keyof ClientEvents | string;
 	public emitter: EventEmitter;
 	public once?: boolean | undefined;
@@ -10,7 +12,10 @@ export class EventListener implements EventListenerOptions {
 	/** @internal The name of the filepath associated with the event */
 	public filepath!: string;
 
-	public constructor(public client: PentagonClient, options: EventListenerOptions) {
+	public constructor(client: PentagonClient, options: EventListenerOptions) {
+		super(client);
+		if (!options) throw new InteractionHandlerError("noConstructorOptions");
+
 		this.name = options.name;
 		this.emitter = options.emitter ?? this.client;
 		this.once = options.once;
