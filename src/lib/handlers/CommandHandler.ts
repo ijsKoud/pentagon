@@ -5,12 +5,17 @@ import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import { join } from "node:path";
 import { Collection } from "discord.js";
 import { Command } from "../structures/Command.js";
+import { CommandRegistry } from "./CommandRegistryHandler.js";
 
 export class CommandHandler {
 	/** All the available commands */
 	public commands = new Collection<string, Command>();
+	/** The registry handler responsible for registering all the commands */
+	public registry: CommandRegistry;
 
-	public constructor(public client: PentagonClient, public directory: string) {}
+	public constructor(public client: PentagonClient, public directory: string) {
+		this.registry = new CommandRegistry(client);
+	}
 
 	/**
 	 * Loads all the commands
