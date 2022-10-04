@@ -2,17 +2,26 @@ import { Client } from "discord.js";
 import { join } from "node:path";
 import { CommandHandler } from "../../src/lib/handlers/CommandHandler";
 import { EventHandler } from "../../src/lib/handlers/EventHandler";
+import { ErrorHandler } from "../../src/lib/handlers/ErrorHandler";
 import { Logger } from "../../src/lib/logger/Logger";
 import { LogLevel } from "../../src/lib/logger/LoggerTypes";
 
 export class PentagonClient extends Client {
 	public commandHandler = new CommandHandler(this as any, join(__dirname, "commands"));
 	public eventHandler = new EventHandler(this as any, join(__dirname, "events"));
-	public logger = new Logger({ level: this.getLevel() });
+	public errorHandler = new ErrorHandler(this as any);
 
-	public constructor() {
+	public logger: Logger;
+
+	public constructor(options?: { console?: Console }) {
 		super({
 			intents: []
+		});
+
+		this.logger = new Logger({
+			level: this.getLevel(),
+			console: options?.console,
+			format: { none: { timestamp: null, level: false, message: (str: string | number) => str.toString() } }
 		});
 	}
 

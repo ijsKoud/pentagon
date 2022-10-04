@@ -1,3 +1,4 @@
+import type { Awaitable, CommandInteraction, Interaction } from "discord.js";
 import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import { Base } from "./Base.js";
@@ -33,6 +34,18 @@ export class Command extends Base implements CommandOptions {
 	 */
 	public unload() {
 		// placeholder for possible unload function for command
+	}
+
+	public run(interaction: CommandInteraction): Awaitable<void> {
+		void interaction.reply({ content: "The logic behind this command left before the party could start :(" });
+	}
+
+	public async _run(interaction: CommandInteraction): Promise<void> {
+		try {
+			await this.run(interaction);
+		} catch (error) {
+			void this.client.errorHandler.handleError(error, interaction as Interaction);
+		}
 	}
 }
 
