@@ -113,6 +113,11 @@ export class CommandRegistry {
 		}
 	}
 
+	/**
+	 * Returns a object key or null depending on if the objects are different or not
+	 * @param discord the Discord ApplicationCommand
+	 * @param command the bot Command
+	 */
 	private isDifferent(discord: ApplicationCommand, command: Command): string | null {
 		// @ts-ignore Re-assigning value to make sure Lodash does not return false when checking
 		discord.nameLocalizations ??= undefined;
@@ -120,8 +125,9 @@ export class CommandRegistry {
 		if (!_.isEqual(discord.nameLocalizations, command.nameLocalizations)) return "nameLocalizations";
 		if (!_.isEqual(discord.descriptionLocalizations, command.descriptions)) return "descriptionLocalizations";
 
-		if (!discord.defaultMemberPermissions?.equals(new PermissionsBitField(command.permissions.default))) return "defaultMemberPermissions";
 		if (discord.dmPermission !== command.permissions.dm) return "dmPermission";
+		if (!_.isEqual(discord.defaultMemberPermissions?.toArray() ?? [], new PermissionsBitField(command.permissions.default).toArray()))
+			return "defaultMemberPermissions";
 
 		return null;
 	}
