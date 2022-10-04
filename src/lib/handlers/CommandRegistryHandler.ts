@@ -8,6 +8,9 @@ import { bold } from "colorette";
 export class CommandRegistry {
 	public constructor(public client: PentagonClient) {}
 
+	/**
+	 * Sync the commands from the bot with the commands registered with Discord
+	 */
 	public async start() {
 		try {
 			const existingCommands = await this.getRegisteredCommand();
