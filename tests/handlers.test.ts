@@ -117,4 +117,7 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 		// @ts-expect-error not for testing
 		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, command)).toEqual("nameLocalizations");
 	});
+
+	// TODO: Add tests for options check
+	// TODO: Add tests for: getCommandData
 });

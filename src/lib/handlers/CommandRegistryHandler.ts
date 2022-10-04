@@ -130,6 +130,8 @@ export class CommandRegistry {
 			return "defaultMemberPermissions";
 
 		return null;
+
+		// TODO: Check options for differences
 	}
 
 	/** Returns an object with all the necessary data to register a command */
