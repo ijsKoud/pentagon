@@ -1,11 +1,16 @@
-import type { Awaitable, CommandInteraction, Interaction } from "discord.js";
+import type { APIApplicationCommandOption, Awaitable, CommandInteraction, Interaction, Locale, PermissionResolvable } from "discord.js";
 import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import { Base } from "./Base.js";
 
 export class Command extends Base implements CommandOptions {
 	public name: string;
-	public description: string;
+	public nameLocalizations?: Partial<Record<Locale, string>> | undefined;
+
+	public options: APIApplicationCommandOption[];
+
+	public descriptions: Partial<Record<Locale, string>>;
+	public permissions: CommandPermissions;
 
 	/** The category of the command (automatically set by the commandHandler) */
 	public category!: string;
@@ -17,7 +22,12 @@ export class Command extends Base implements CommandOptions {
 		if (!options) throw new InteractionHandlerError("noConstructorOptions");
 
 		this.name = options.name;
-		this.description = options.description;
+		this.nameLocalizations = options.nameLocalizations;
+
+		this.options = options.options ?? [];
+
+		this.descriptions = options.descriptions;
+		this.permissions = { dm: true, ...options.permissions };
 	}
 
 	/**
@@ -52,8 +62,25 @@ export class Command extends Base implements CommandOptions {
 export interface CommandOptions {
 	/** The name of the command */
 	name: string;
-	/** A small description about the command */
-	description: string;
+	/** The name localizations of the command */
+	nameLocalizations?: Partial<Record<Locale, string>>;
+	/** A small description about the command. The English translation will also be used as default description. */
+	descriptions: Partial<Record<Locale, string>>;
+	/** Options users have to pass through before sending the command
+	 * @default []
+	 */
+	options?: APIApplicationCommandOption[];
+	/** The permissions for the command */
+	permissions?: Partial<CommandPermissions>;
+}
+
+export interface CommandPermissions {
+	/** Whether or not the command is available in DMs
+	 * @default true
+	 */
+	dm: boolean;
+	/** The permissions needed to use this command */
+	default?: PermissionResolvable;
 }
 
 export interface CommandLoadOptions {
