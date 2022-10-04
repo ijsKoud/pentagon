@@ -129,9 +129,9 @@ export class CommandRegistry {
 		if (!_.isEqual(discord.defaultMemberPermissions?.toArray() ?? [], new PermissionsBitField(command.permissions.default).toArray()))
 			return "defaultMemberPermissions";
 
-		return null;
+		if (!_.isEqual(discord.options, command.options)) return "options";
 
-		// TODO: Check options for differences
+		return null;
 	}
 
 	/** Returns an object with all the necessary data to register a command */

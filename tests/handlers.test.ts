@@ -1,7 +1,7 @@
 import { PentagonClient } from "./mocks/ClientMock";
 import { describe, test, expect, vi } from "vitest";
 import { bold, underline } from "colorette";
-import { ApplicationCommand, InteractionReplyOptions, PermissionsBitField, RepliableInteraction } from "discord.js";
+import { ApplicationCommand, ApplicationCommandOptionType, InteractionReplyOptions, PermissionsBitField, RepliableInteraction } from "discord.js";
 import { Command } from "../src/lib/structures/Command";
 
 describe("test(EventHandler): handling & running functions", () => {
@@ -61,7 +61,20 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 			"en-US": "hello universe"
 		},
 		dmPermission: false,
-		defaultMemberPermissions: new PermissionsBitField(["AddReactions"])
+		defaultMemberPermissions: new PermissionsBitField(["AddReactions"]),
+		options: [
+			{
+				name: "name",
+				description: "your name",
+				type: ApplicationCommandOptionType.String,
+				choices: [
+					{
+						name: "Daan",
+						value: "Daan"
+					}
+				]
+			}
+		]
 	} as ApplicationCommand;
 
 	const mockCommand: Command = {
@@ -77,7 +90,20 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 		permissions: {
 			dm: false,
 			default: ["AddReactions"]
-		}
+		},
+		options: [
+			{
+				name: "name",
+				description: "your name",
+				type: ApplicationCommandOptionType.String,
+				choices: [
+					{
+						name: "Daan",
+						value: "Daan"
+					}
+				]
+			}
+		]
 	} as unknown as Command;
 
 	test("CommandRegistryHandler: checking the difference should received 'null'", () => {
@@ -91,15 +117,17 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 
 		// @ts-expect-error not for testing
 		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, mockCommand)).toEqual("dmPermission");
+		command.permissions.dm = false;
 	});
 
 	test("CommandRegistryHandler: checking the difference should receive 'defaultMemberPermissions'", () => {
 		const command = { ...mockCommand };
 		command.permissions.default = undefined;
-		command.permissions.dm = false;
 
 		// @ts-expect-error not for testing
 		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, command)).toEqual("defaultMemberPermissions");
+
+		command.permissions.default = ["AddReactions"];
 	});
 
 	test("CommandRegistryHandler: checking the difference should receive 'descriptionLocalizations'", () => {
@@ -108,6 +136,8 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 
 		// @ts-expect-error not for testing
 		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, command)).toEqual("descriptionLocalizations");
+
+		command.descriptions!["en-US"] = "hello universe";
 	});
 
 	test("CommandRegistryHandler: checking the difference should receive 'nameLocalizations'", () => {
@@ -116,8 +146,17 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 
 		// @ts-expect-error not for testing
 		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, command)).toEqual("nameLocalizations");
+
+		command.nameLocalizations!["en-US"] = "test2";
 	});
 
-	// TODO: Add tests for options check
+	test("CommandRegistryHandler: checking the difference should receive 'options'", () => {
+		const command = { ...mockCommand };
+		command.options = [];
+
+		// @ts-expect-error not for testing
+		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, command)).toEqual("options");
+	});
+
 	// TODO: Add tests for: getCommandData
 });
