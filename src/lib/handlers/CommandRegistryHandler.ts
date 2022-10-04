@@ -31,7 +31,6 @@ export class CommandRegistry {
 							different.command.result
 						)} was different.`
 					);
-					console.log(different.command.command.nameLocalizations, different.discord.nameLocalizations);
 					await different.discord.edit(this.getCommandData(different.command.command));
 					return;
 				}
