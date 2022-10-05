@@ -1,7 +1,14 @@
 import { PentagonClient } from "./mocks/ClientMock";
 import { describe, test, expect, vi } from "vitest";
 import { bold, underline } from "colorette";
-import { ApplicationCommand, ApplicationCommandOptionType, InteractionReplyOptions, PermissionsBitField, RepliableInteraction } from "discord.js";
+import {
+	ApplicationCommand,
+	ApplicationCommandOptionType,
+	ApplicationCommandType,
+	InteractionReplyOptions,
+	PermissionsBitField,
+	RepliableInteraction
+} from "discord.js";
 import { Command } from "../src/lib/structures/Command";
 
 describe("test(EventHandler): handling & running functions", () => {
@@ -158,5 +165,12 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 		expect(client.commandHandler.registry.isDifferent(mockApplicationCommand, command)).toEqual("options");
 	});
 
-	// TODO: Add tests for: getCommandData
+	test("CommandRegistryHandler: getCommandData test", () => {
+		// @ts-expect-error not for testing
+		expect(client.commandHandler.registry.getCommandData(mockCommand)).toEqual({
+			...mockApplicationCommand,
+			defaultMemberPermissions: mockApplicationCommand.defaultMemberPermissions?.toArray() ?? [],
+			type: ApplicationCommandType.ChatInput
+		});
+	});
 });
