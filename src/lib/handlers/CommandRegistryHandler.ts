@@ -2,8 +2,8 @@ import { ApplicationCommand, ApplicationCommandType, Collection, PermissionsBitF
 import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import type { Command } from "../structures/Command.js";
-import _ from "lodash";
 import { bold } from "colorette";
+import _ from "lodash";
 
 export class CommandRegistry {
 	public constructor(public client: PentagonClient) {}
@@ -25,19 +25,25 @@ export class CommandRegistry {
 			for (const different of [...this.getDifferences(existingCommands, botCommands)]) {
 				count++;
 
-				if (different.discord) {
-					this.client.logger.debug(
-						`(CommandRegistry): Updating a new command with name: ${bold(different.command.command.name)} because ${bold(
-							different.command.result
-						)} was different.`
-					);
-					console.log(different.command.command.nameLocalizations, different.discord.nameLocalizations);
-					await different.discord.edit(this.getCommandData(different.command.command));
-					return;
-				}
+				try {
+					if (different.discord) {
+						this.client.logger.debug(
+							`(CommandRegistry): Updating a new command with name: ${bold(different.command.command.name)} because ${bold(
+								different.command.result
+							)} was different.`
+						);
+						await different.discord.edit(this.getCommandData(different.command.command));
+						return;
+					}
 
-				this.client.logger.debug(`(CommandRegistry): Creating a new command with name: ${bold(different.command.command.name)}.`);
-				await this.client.application?.commands.create(this.getCommandData(different.command.command));
+					this.client.logger.debug(`(CommandRegistry): Creating a new command with name: ${bold(different.command.command.name)}.`);
+					await this.client.application?.commands.create(this.getCommandData(different.command.command));
+				} catch (error) {
+					this.client.logger.fatal(
+						`(CommandRegistry): unable to update/create a command with name: ${bold(different.command.command.name)}.`
+					);
+					void this.client.errorHandler.handleError(error);
+				}
 			}
 
 			this.client.logger.debug(`(CommandRegistry): Updated/Created a total of ${count} commands.`);
@@ -114,6 +120,11 @@ export class CommandRegistry {
 		}
 	}
 
+	/**
+	 * Returns a object key or null depending on if the objects are different or not
+	 * @param discord the Discord ApplicationCommand
+	 * @param command the bot Command
+	 */
 	private isDifferent(discord: ApplicationCommand, command: Command): string | null {
 		// @ts-ignore Re-assigning value to make sure Lodash does not return false when checking
 		discord.nameLocalizations ??= undefined;
@@ -121,8 +132,11 @@ export class CommandRegistry {
 		if (!_.isEqual(discord.nameLocalizations, command.nameLocalizations)) return "nameLocalizations";
 		if (!_.isEqual(discord.descriptionLocalizations, command.descriptions)) return "descriptionLocalizations";
 
-		if (!discord.defaultMemberPermissions?.equals(new PermissionsBitField(command.permissions.default))) return "defaultMemberPermissions";
 		if (discord.dmPermission !== command.permissions.dm) return "dmPermission";
+		if (!_.isEqual(discord.defaultMemberPermissions?.toArray() ?? [], new PermissionsBitField(command.permissions.default).toArray()))
+			return "defaultMemberPermissions";
+
+		if (!_.isEqual(discord.options, command.options)) return "options";
 
 		return null;
 	}
