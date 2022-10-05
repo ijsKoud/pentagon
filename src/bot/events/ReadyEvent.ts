@@ -8,6 +8,7 @@ import { EventListener, EventListenerOptions } from "../../lib/structures/EventL
 })
 export default class extends EventListener {
 	public run() {
+		void this.client.commandHandler.registry.start();
 		this.client.logger.info(`(Bot): Connected to Discord as ${bold(this.client.user?.tag ?? "")}.`);
 	}
 }
