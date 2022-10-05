@@ -169,7 +169,7 @@ describe("test(CommandRegistryHandler): differences & data getters", () => {
 		// @ts-expect-error not for testing
 		expect(client.commandHandler.registry.getCommandData(mockCommand)).toEqual({
 			...mockApplicationCommand,
-			defaultMemberPermissions: mockApplicationCommand.defaultMemberPermissions?.toArray() ?? [],
+			defaultMemberPermissions: mockApplicationCommand.defaultMemberPermissions,
 			type: ApplicationCommandType.ChatInput
 		});
 	});

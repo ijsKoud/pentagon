@@ -16,7 +16,6 @@ export class CommandRegistry {
 			const existingCommands = await this.getRegisteredCommand();
 			const botCommands = this.client.commandHandler.commands;
 			const unknown = existingCommands.filter((cmd) => !botCommands.get(cmd.name));
-
 			this.client.logger.debug(
 				`(CommandRegistry): Received ${existingCommands.size} registered commands and ${botCommands.size} bot commands.`
 			);
@@ -133,7 +132,7 @@ export class CommandRegistry {
 		if (!_.isEqual(discord.descriptionLocalizations, command.descriptions)) return "descriptionLocalizations";
 
 		if (discord.dmPermission !== command.permissions.dm) return "dmPermission";
-		if (!_.isEqual(discord.defaultMemberPermissions?.toArray() ?? [], new PermissionsBitField(command.permissions.default).toArray()))
+		if (!_.isEqual(discord.defaultMemberPermissions, command.permissions.default ? new PermissionsBitField(command.permissions.default) : null))
 			return "defaultMemberPermissions";
 
 		if (!_.isEqual(discord.options, command.options)) return "options";
@@ -149,7 +148,7 @@ export class CommandRegistry {
 			description: command.descriptions["en-GB"]!,
 			descriptionLocalizations: command.descriptions,
 			dmPermission: command.permissions.dm,
-			defaultMemberPermissions: command.permissions.default,
+			defaultMemberPermissions: command.permissions.default ? new PermissionsBitField(command.permissions.default) : null,
 			type: ApplicationCommandType.ChatInput,
 			options: command.options
 		};

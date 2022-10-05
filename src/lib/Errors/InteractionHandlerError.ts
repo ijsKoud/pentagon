@@ -8,4 +8,9 @@ export class InteractionHandlerError extends Error {
 	}
 }
 
-type InteractionHandlerErrorType = "InvalidDirectory" | "InvalidStructureClass" | "noConstructorOptions" | "invalidFetchedCommands";
+type InteractionHandlerErrorType =
+	| "InvalidDirectory"
+	| "InvalidStructureClass"
+	| "noConstructorOptions"
+	| "invalidFetchedCommands"
+	| "unknownCommand";
