@@ -136,6 +136,7 @@ export class CommandRegistry {
 		if (!_.isEqual(discord.defaultMemberPermissions, command.permissions.default ? new PermissionsBitField(command.permissions.default) : null))
 			return "defaultMemberPermissions";
 
+		// TODO: fix check because of undefined object properties
 		if (!_.isEqual(discord.options, command.options)) return "options";
 
 		return null;
