@@ -1,10 +1,18 @@
 import { bold } from "colorette";
 import type { Awaitable, ChatInputCommandInteraction, CommandInteraction } from "discord.js";
+import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
-import { Command } from "./Command.js";
+import { Command, CommandOptions } from "./Command.js";
 
 export class SubCommand extends Command {
 	public subcommands: SubCommandType[] = [];
+
+	public constructor(client: PentagonClient, options: SubCommandOptions) {
+		super(client, options);
+
+		// @ts-ignore yes you can, yes we want
+		this.subcommands = options.subcommands.map((v) => ({ name: v.name, fn: this[v.functionName] }));
+	}
 
 	public async _run(interaction: CommandInteraction): Promise<void> {
 		try {
@@ -24,7 +32,7 @@ export class SubCommand extends Command {
 				);
 
 			const fn = this.subcommands.find((cmd) => cmd.name === subcommand);
-			if (!fn) {
+			if (!fn || typeof fn.fn !== "function") {
 				void interaction.followUp("The logic behind this command already left before the party could start :(");
 				throw new InteractionHandlerError(
 					"unknownCommand",
@@ -48,4 +56,8 @@ export class SubCommand extends Command {
 interface SubCommandType {
 	name: string;
 	fn: (interaction: ChatInputCommandInteraction) => Awaitable<void>;
+}
+
+export interface SubCommandOptions extends CommandOptions {
+	subcommands: { name: string; functionName: string }[];
 }

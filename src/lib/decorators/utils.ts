@@ -19,7 +19,6 @@ export function createProxy<T extends object>(target: T, handler: Omit<ProxyHand
 
 /**
  * Create a class Decorator with easy typings
- * @param fn The class to decorate
  */
 export function createClassDecorator<F extends TFunction>(fn: F): ClassDecorator {
 	return fn;
