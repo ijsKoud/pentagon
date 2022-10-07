@@ -1,11 +1,13 @@
-import type { Awaitable, Interaction } from "discord.js";
+import type { Awaitable, ComponentType, Interaction, InteractionType } from "discord.js";
 import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import { Base } from "./Base.js";
 
 export class InteractionListener extends Base implements InteractionListenerOptions {
 	public name: string;
-	public strategy: "include" | "equal" | "startswith" | "endswith";
+	public type: InteractionType.ModalSubmit | ComponentType.Button | ComponentType.SelectMenu;
+
+	public strategy: "include" | "equal" | "startsWith" | "endsWith";
 	public check?: ((id: string) => boolean) | undefined;
 
 	/** @internal The name of the filepath associated with the InteractionListener */
@@ -16,6 +18,8 @@ export class InteractionListener extends Base implements InteractionListenerOpti
 		if (!options) throw new InteractionHandlerError("noConstructorOptions");
 
 		this.name = options.name;
+		this.type = options.type;
+
 		this.strategy = options.strategy ?? "equal";
 		this.check = options.check;
 	}
@@ -52,10 +56,12 @@ export class InteractionListener extends Base implements InteractionListenerOpti
 export interface InteractionListenerOptions {
 	/** The name (customId) of the Interaction */
 	name: string;
+	/** The type of interactions you accept for the listener */
+	type: InteractionType.ModalSubmit | ComponentType.Button | ComponentType.SelectMenu;
 	/** The strategy the handler should use to check if the interaction should be ran by this class
 	 * @default "equal"
 	 */
-	strategy?: "include" | "equal" | "startswith" | "endswith";
+	strategy?: "include" | "equal" | "startsWith" | "endsWith";
 	/** A custom check function which overwrites the default one */
 	check?: (id: string) => boolean;
 }
