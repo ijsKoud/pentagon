@@ -2,15 +2,15 @@ import {
 	ActionRowBuilder,
 	ModalActionRowComponentBuilder,
 	ApplicationCommandOptionType,
-	CommandInteraction,
 	ModalBuilder,
 	TextInputBuilder,
-	TextInputStyle
+	TextInputStyle,
+	ChatInputCommandInteraction
 } from "discord.js";
 import { ApplyOptions } from "../../../lib/decorators/StructureDecorators.js";
-import { Command, CommandOptions } from "../../../lib/structures/Command.js";
+import { SubCommand, SubCommandOptions } from "../../../lib/structures/SubCommand.js";
 
-@ApplyOptions<CommandOptions>({
+@ApplyOptions<SubCommandOptions>({
 	name: "support",
 	nameLocalizations: {
 		"en-GB": "support"
@@ -39,22 +39,26 @@ import { Command, CommandOptions } from "../../../lib/structures/Command.js";
 	],
 	permissions: {
 		dm: true
-	}
-})
-export default class extends Command {
-	public async run(interaction: CommandInteraction) {
-		// TODO: add subcommand handler
-		if (!interaction.isChatInputCommand()) return;
-
-		const subcommand = interaction.options.getSubcommand(true);
-		if (subcommand === "server") {
-			await interaction.reply(
-				`🤝 Follow [this link](https://discord.gg/${process.env.DISCORD_SUPPORT_SERVER}) to join our server, if you need help do not hesistate to ask and if you want to contact a developer use </support contact-dev:${interaction.commandId}>`
-			);
-
-			return;
+	},
+	subcommands: [
+		{
+			name: "server",
+			functionName: "serverSubCommand"
+		},
+		{
+			name: "contact-dev",
+			functionName: "contactDevSubCommand"
 		}
+	]
+})
+export default class extends SubCommand {
+	public async serverSubCommand(interaction: ChatInputCommandInteraction) {
+		await interaction.reply(
+			`🤝 Follow [this link](https://discord.gg/${process.env.DISCORD_SUPPORT_SERVER}) to join our server, if you need help do not hesistate to ask and if you want to contact a developer use </support contact-dev:${interaction.commandId}>`
+		);
+	}
 
+	public async contactDevSubCommand(interaction: ChatInputCommandInteraction) {
 		const modal = new ModalBuilder().setTitle("Contact the developer team.").setCustomId("contact-devteam");
 		const titleInput = new TextInputBuilder()
 			.setCustomId("contact-title")
