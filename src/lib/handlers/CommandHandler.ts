@@ -37,7 +37,7 @@ export class CommandHandler {
 				const cmd = new command(this.client);
 
 				if (!(cmd instanceof Command))
-					this.client.logger.warn(`(COMMANDHANDLER): "${file}" does not contain a Command extended default export.`);
+					this.client.logger.warn(`(CommandHandler): "${file}" does not contain a Command extended default export.`);
 
 				cmd.load({ category, filename: file });
 				this.commands.set(cmd.name, cmd);
@@ -52,13 +52,13 @@ export class CommandHandler {
 	 * @throws InterActionHandlerError
 	 */
 	public async reloadCommands(): Promise<void> {
-		this.client.logger.debug("(COMMANDHANDLER): Reloading all commands...");
+		this.client.logger.debug("(CommandHandler): Reloading all commands...");
 
 		this.commands.forEach((cmd) => cmd.unload());
 		this.commands = new Collection<string, Command>();
 		await this.loadCommands();
 
-		this.client.logger.debug("(COMMANDHANDLER): Successfully reloaded all commands.");
+		this.client.logger.debug("(CommandHandler): Successfully reloaded all commands.");
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class CommandHandler {
 			command.unload();
 			this.commands.delete(name);
 
-			this.client.logger.debug(`(COMMANDHANDLER): Successfully unloaded ${command.name}`);
+			this.client.logger.debug(`(CommandHandler): Successfully unloaded ${command.name}`);
 
 			return true;
 		}
@@ -98,7 +98,7 @@ export class CommandHandler {
 		cmd.load({ category, filename: file });
 		this.commands.set(cmd.name, cmd);
 
-		this.client.logger.debug(`(COMMANDHANDLER): Successfully loaded ${cmd.name}`);
+		this.client.logger.debug(`(CommandHandler): Successfully loaded ${cmd.name}`);
 
 		return true;
 	}
@@ -115,7 +115,7 @@ export class CommandHandler {
 			command.unload();
 			const bool = await this.loadCommand(command.category, command.filename);
 
-			this.client.logger.debug(`(COMMANDHANDLER): Successfully reloaded ${command.name}`);
+			this.client.logger.debug(`(CommandHandler): Successfully reloaded ${command.name}`);
 
 			return bool;
 		}

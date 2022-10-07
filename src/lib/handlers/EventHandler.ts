@@ -33,7 +33,7 @@ export class EventHandler {
 				const evnt = new event(this.client);
 
 				if (!(evnt instanceof EventListener))
-					this.client.logger.warn(`(EVENTHANDLER): "${file}" does not contain a EventListener extended default export.`);
+					this.client.logger.warn(`(EventHandler): "${file}" does not contain a EventListener extended default export.`);
 
 				evnt.load({ category, filename: file });
 				this.events.set(evnt.name, evnt);
@@ -48,13 +48,13 @@ export class EventHandler {
 	 * @throws InterActionHandlerError
 	 */
 	public async reloadEvents(): Promise<void> {
-		this.client.logger.debug("(EVENTHANDLER): Reloading all events...");
+		this.client.logger.debug("(EventHandler): Reloading all events...");
 
 		this.events.forEach((event) => event.unload());
 		this.events = new Collection<string, EventListener>();
 		await this.loadEvents();
 
-		this.client.logger.debug("(EVENTHANDLER): Successfully reloaded all events.");
+		this.client.logger.debug("(EventHandler): Successfully reloaded all events.");
 	}
 
 	/**
@@ -68,7 +68,7 @@ export class EventHandler {
 			event.unload();
 			this.events.delete(name);
 
-			this.client.logger.debug(`(EVENTHANDLER): Successfully unloaded ${event.name}`);
+			this.client.logger.debug(`(EventHandler): Successfully unloaded ${event.name}`);
 
 			return true;
 		}
@@ -93,7 +93,7 @@ export class EventHandler {
 		evnt.load({ filepath: file });
 		this.events.set(evnt.name, evnt);
 
-		this.client.logger.debug(`(EVENTHANDLER): Successfully loaded ${evnt.name}`);
+		this.client.logger.debug(`(EventHandler): Successfully loaded ${evnt.name}`);
 
 		return true;
 	}
@@ -110,7 +110,7 @@ export class EventHandler {
 			event.unload();
 			const bool = await this.loadEvent(event.filepath);
 
-			this.client.logger.debug(`(EVENTHANDLER): Successfully reloaded ${event.name}`);
+			this.client.logger.debug(`(EventHandler): Successfully reloaded ${event.name}`);
 
 			return bool;
 		}
