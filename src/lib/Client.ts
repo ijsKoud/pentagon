@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { Client, GatewayIntentBits } from "discord.js";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,6 +18,12 @@ export class PentagonClient extends Client {
 	public errorHandler = new ErrorHandler(this);
 
 	public logger = new Logger({ level: this.getLevel() });
+	public prisma = new PrismaClient({
+		log: [
+			{ emit: "event", level: "warn" },
+			{ emit: "event", level: "error" }
+		]
+	});
 
 	public constructor() {
 		super({
@@ -42,6 +49,10 @@ export class PentagonClient extends Client {
 		this.logger.info(`(EventHandler): Loaded a total of ${events} EventListeners.`);
 		this.logger.info(`(InteractionHandler): Loaded a total of ${interactions} InteractionListeners.`);
 
+		this.prisma.$on("warn", (ev) => this.logger.warn(`(${ev.target}): ${ev.message}`));
+		this.prisma.$on("error", (ev) => this.logger.error(`(${ev.target}): ${ev.message}`));
+
+		await this.prisma.$connect();
 		await this.login(this.getToken());
 	}
 
@@ -50,7 +61,7 @@ export class PentagonClient extends Client {
 	 * @returns A logLevel depending on the run state
 	 */
 	private getLevel() {
-		return process.env.NODE_ENV === "development" ? LogLevel.Debug : LogLevel.Info;
+		return process.env.NODE_ENV === "development" ? LogLevel.Trace : LogLevel.Info;
 	}
 
 	/**
