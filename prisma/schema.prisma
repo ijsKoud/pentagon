@@ -19,8 +19,9 @@ model ticket {
   title       String // Title of ticket request (max: 512 characters)
   description String // Description of ticket request (max: 2048 characters)
 
-  originalPoster String @map("orginal_poster") // UserId of user that created the ticket
-  claimedBy      String @map("claimed_by") // UserId of user who claimed the ticket
+  originalPoster String  @map("orginal_poster") // UserId of user that created the ticket
+  claimedBy      String  @map("claimed_by") // UserId of user who claimed the ticket
+  guildId        String? @map("guild_id") // The guildId of the guild the ticket is from
 
   transcription Json // transcription data for front-end
 }
