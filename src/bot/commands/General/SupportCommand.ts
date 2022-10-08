@@ -124,12 +124,14 @@ export default class extends SubCommand {
 			.setLabel("Title")
 			.setPlaceholder("Is it possible to add...")
 			.setRequired(true)
+			.setMaxLength(512)
 			.setStyle(TextInputStyle.Short);
 		const descriptionInput = new TextInputBuilder()
 			.setCustomId("contact-description")
 			.setLabel("Description")
 			.setPlaceholder("It is because currently...")
 			.setRequired(true)
+			.setMaxLength(2048)
 			.setStyle(TextInputStyle.Paragraph);
 
 		const firstActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
