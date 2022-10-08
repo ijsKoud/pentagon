@@ -1,5 +1,12 @@
 import { bold } from "colorette";
-import type { CacheType, CommandInteraction, Interaction, MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
+import type {
+	AutocompleteInteraction,
+	CacheType,
+	CommandInteraction,
+	Interaction,
+	MessageComponentInteraction,
+	ModalSubmitInteraction
+} from "discord.js";
 import { ApplyOptions } from "../../../lib/decorators/StructureDecorators.js";
 import { InteractionHandlerError } from "../../../lib/Errors/InteractionHandlerError.js";
 import { EventListener, EventListenerOptions } from "../../../lib/structures/EventListener.js";
@@ -10,6 +17,7 @@ import { EventListener, EventListenerOptions } from "../../../lib/structures/Eve
 export default class extends EventListener {
 	public run(interaction: Interaction) {
 		if (interaction.isCommand()) return this.commandInteraction(interaction);
+		if (interaction.isAutocomplete()) return this.autocompleteInteraction(interaction);
 		if (interaction.isMessageComponent() || interaction.isModalSubmit()) return this.customIdTypeInteraction(interaction);
 	}
 
@@ -22,6 +30,20 @@ export default class extends EventListener {
 			);
 
 		void command._run(interaction);
+	}
+
+	public autocompleteInteraction(interaction: AutocompleteInteraction): void {
+		const command = this.client.commandHandler.commands.get(interaction.commandName);
+		if (!command)
+			return void this.client.errorHandler.handleError(
+				new InteractionHandlerError(
+					"unknownCommand",
+					`AutocompleteInteraction with name: ${bold(interaction.commandName)} is missing a command.`
+				),
+				interaction as Interaction
+			);
+
+		void command._autocomplete(interaction);
 	}
 
 	public customIdTypeInteraction(interaction: MessageComponentInteraction<CacheType> | ModalSubmitInteraction<CacheType>) {

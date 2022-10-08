@@ -1,4 +1,12 @@
-import type { APIApplicationCommandOption, Awaitable, CommandInteraction, Interaction, Locale, PermissionResolvable } from "discord.js";
+import type {
+	APIApplicationCommandOption,
+	AutocompleteInteraction,
+	Awaitable,
+	CommandInteraction,
+	Interaction,
+	Locale,
+	PermissionResolvable
+} from "discord.js";
 import type { PentagonClient } from "../Client.js";
 import { InteractionHandlerError } from "../Errors/InteractionHandlerError.js";
 import { Base } from "./Base.js";
@@ -50,9 +58,21 @@ export class Command extends Base implements CommandOptions {
 		void interaction.reply({ content: "The logic behind this command left before the party could start :(" });
 	}
 
+	public autocomplete(interaction: AutocompleteInteraction): Awaitable<void> {
+		void interaction.respond([]);
+	}
+
 	public async _run(interaction: CommandInteraction): Promise<void> {
 		try {
 			await this.run(interaction);
+		} catch (error) {
+			void this.client.errorHandler.handleError(error, interaction as Interaction);
+		}
+	}
+
+	public async _autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+		try {
+			await this.autocomplete(interaction);
 		} catch (error) {
 			void this.client.errorHandler.handleError(error, interaction as Interaction);
 		}
