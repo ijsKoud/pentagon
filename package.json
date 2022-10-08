@@ -12,7 +12,9 @@
 		"colorette": "^2.0.19",
 		"discord.js": "^14.5.0",
 		"dotenv": "^16.0.3",
-		"lodash": "^4.17.21"
+		"fuse.js": "^6.6.2",
+		"lodash": "^4.17.21",
+		"nanoid": "^4.0.0"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^17.1.2",
