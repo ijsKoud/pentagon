@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ticket {
+  id        String   @id @map("ticket_id") // ticket-....
+  createdAt DateTime @default(now()) @map("created_at") // The date the ticket was created: max 7 days of inactivity
+  type      Int // 1: Guild Ticket; 2: Dev Ticket;
+  status    Int // 1: Open; 2: Claimed; 3: Closed
+
+  title       String // Title of ticket request (max: 512 characters)
+  description String // Description of ticket request (max: 2048 characters)
+
+  originalPoster String  @map("orginal_poster") // UserId of user that created the ticket
+  claimedBy      String  @map("claimed_by") // UserId of user who claimed the ticket
+  guildId        String? @map("guild_id") // The guildId of the guild the ticket is from
+
+  transcription Json // transcription data for front-end
+}

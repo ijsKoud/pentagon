@@ -1,3 +1,4 @@
+import type { ticket } from "@prisma/client";
 import {
 	ActionRowBuilder,
 	ModalActionRowComponentBuilder,
@@ -9,6 +10,8 @@ import {
 	AutocompleteInteraction,
 	CacheType
 } from "discord.js";
+import Fuse from "fuse.js";
+import { TicketStatus } from "../../../lib/components/TicketSystem.js";
 import { ApplyOptions } from "../../../lib/decorators/StructureDecorators.js";
 import { SubCommand, SubCommandOptions } from "../../../lib/structures/SubCommand.js";
 
@@ -105,10 +108,22 @@ import { SubCommand, SubCommandOptions } from "../../../lib/structures/SubComman
 export default class extends SubCommand {
 	public async autocomplete(interaction: AutocompleteInteraction<CacheType>) {
 		const ticketInput = interaction.options.getString("ticket", true);
-		const tickets = ["ticket-1234567890", "ticket-0987654321"];
+		const tickets = await this.client.prisma.ticket.findMany({
+			where: { OR: [{ originalPoster: interaction.user.id }, { claimedBy: interaction.user.id }], status: TicketStatus.CLAIMED }
+		});
 
-		ticketInput;
-		await interaction.respond(tickets.map((ticket) => ({ name: ticket, value: ticket })));
+		// @ts-ignore TypeScript ESM issues
+		const search = new Fuse(tickets, { keys: ["id"], isCaseSensitive: true });
+		const _results: Fuse.default.FuseResult<ticket>[] = search.search(ticketInput);
+		const results = ticketInput ? _results.map((res) => res.item) : tickets;
+
+		await interaction.respond(
+			results.map((res) => {
+				const guild = this.client.guilds.cache.get(res.guildId ?? "");
+				const suffix = res.guildId ? guild?.name ?? "UNKNOWN SERVER" : "Developer Ticket";
+				return { name: `${res.id} (${suffix})`, value: res.id };
+			})
+		);
 	}
 
 	public async serverSubCommand(interaction: ChatInputCommandInteraction) {
@@ -124,12 +139,14 @@ export default class extends SubCommand {
 			.setLabel("Title")
 			.setPlaceholder("Is it possible to add...")
 			.setRequired(true)
+			.setMaxLength(512)
 			.setStyle(TextInputStyle.Short);
 		const descriptionInput = new TextInputBuilder()
 			.setCustomId("contact-description")
 			.setLabel("Description")
 			.setPlaceholder("It is because currently...")
 			.setRequired(true)
+			.setMaxLength(2048)
 			.setStyle(TextInputStyle.Paragraph);
 
 		const firstActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
@@ -142,11 +159,21 @@ export default class extends SubCommand {
 	public async replySubCommand(interaction: ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true });
 
-		const ticket = interaction.options.getString("ticket", true);
+		const ticketId = interaction.options.getString("ticket", true);
 		const response = interaction.options.getString("response", true);
 		const attachments = interaction.options.getAttachment("attachments", false);
 
-		await interaction.editReply({ content: `<:greentick:749587347372507228>` });
+		const ticket = await this.client.prisma.ticket.findFirst({
+			where: { AND: [{ originalPoster: interaction.user.id }, { claimedBy: interaction.user.id }], status: TicketStatus.CLAIMED, id: ticketId }
+		});
+		if (!ticket) {
+			await interaction.editReply({
+				content: `<:redcross:749587325901602867> The ticketId you provided does not have a valid record in our database. Make sure you only provide Ids of tickets created/claimed by you and open for messages!`
+			});
+			return;
+		}
+
+		await interaction.editReply({ content: `<:greentick:749587347372507228> Message sent successfully.` });
 
 		console.log(ticket, response, attachments);
 	}

@@ -27,6 +27,3 @@ config/automod.json
 config/api.json
 config/constants.json
 config/ticket.json
-
-# prisma
-prisma/migrations/
