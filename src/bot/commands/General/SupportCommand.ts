@@ -173,8 +173,7 @@ export default class extends SubCommand {
 			return;
 		}
 
+		await this.client.ticketSystem.message(ticket, response, attachments, ticket.claimedBy === interaction.user.id, interaction.user.tag);
 		await interaction.editReply({ content: `<:greentick:749587347372507228> Message sent successfully.` });
-
-		console.log(ticket, response, attachments);
 	}
 }

@@ -22,7 +22,7 @@ export class ErrorHandler {
 			this.client.logger[fatal ? "fatal" : "error"](message);
 		} else if (error instanceof DiscordAPIError && interaction && !this.isSilencedError(interaction.channelId ?? "", interaction.guildId, error))
 			this.client.logger.error(`${bold(underline(`DiscordAPIError(${error.name})`))}: ${error.message}`);
-		else this.client.logger.error(`${bold(underline(`Error(${error.name})`))}: ${error.stack}`);
+		else this.client.logger.error(`${bold(underline(`Error(${error.name})`))}: ${error.message}`);
 
 		if (interaction && interaction.isRepliable())
 			await interaction
