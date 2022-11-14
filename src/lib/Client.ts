@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Client, GatewayIntentBits } from "discord.js";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { TicketSystem } from "./components/TicketSystem.js";
 import { CommandHandler } from "./handlers/CommandHandler.js";
 import { ErrorHandler } from "./handlers/ErrorHandler.js";
 import { EventHandler } from "./handlers/EventHandler.js";
@@ -16,6 +17,8 @@ export class PentagonClient extends Client {
 	public eventHandler = new EventHandler(this, join(basePath, "events"));
 	public interactionHandler = new InteractionHandler(this, join(basePath, "interactions"));
 	public errorHandler = new ErrorHandler(this);
+
+	public ticketSystem = new TicketSystem(this);
 
 	public logger = new Logger({ level: this.getLevel() });
 	public prisma = new PrismaClient({
@@ -33,7 +36,12 @@ export class PentagonClient extends Client {
 				GatewayIntentBits.GuildMessages,
 				GatewayIntentBits.DirectMessages,
 				GatewayIntentBits.GuildMembers
-			]
+			],
+			allowedMentions: {
+				roles: [],
+				users: [],
+				repliedUser: true
+			}
 		});
 	}
 
